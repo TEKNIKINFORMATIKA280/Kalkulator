@@ -1,11 +1,33 @@
 include ':app'
 
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        google()
+        mavenCentral()
+    }
+}
+
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+rootProject.name = 'kalkulator'
+
 def localPropertiesFile = new File(rootProject.projectDir, "local.properties")
 def properties = new Properties()
 
-assert localPropertiesFile.exists()
-localPropertiesFile.withReader("UTF-8") { reader -> properties.load(reader) }
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.withReader("UTF-8") { reader -> properties.load(reader) }
+}
 
 def flutterSdkPath = properties.getProperty("flutter.sdk")
 assert flutterSdkPath != null, "flutter.sdk not set in local.properties"
-apply from: "$flutterSdkPath/packages/flutter_tools/gradle/app_plugin_loader.gradle"
+
+// Note: removed legacy apply from app_plugin_loader.gradle which is incompatible with
+// newer Gradle/Flutter plugin resolution. Plugins are declared in the app module's
+// plugins { id "dev.flutter.flutter-gradle-plugin" } block and resolved via pluginManagement.
